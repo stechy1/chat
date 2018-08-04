@@ -1,5 +1,7 @@
 package cz.stechy.chat.core.server;
 
+import com.google.inject.Inject;
+import cz.stechy.chat.core.connection.IConnectionManager;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -17,6 +19,7 @@ class ServerThread extends Thread implements IServerThread {
 
     private static final int SOCKET_TIMEOUT = 5000;
 
+    private final IConnectionManager connectionManager;
     // Číslo portu
     private final int port;
 
@@ -26,10 +29,13 @@ class ServerThread extends Thread implements IServerThread {
     /**
      * Vytvoří novou instanci vlákna serveru
      *
+     * @param connectionManager {@link IConnectionManager}
      * @param port Číslo portu
      */
-    ServerThread(int port) {
+    @Inject
+    ServerThread(IConnectionManager connectionManager, int port) {
         super("ServerThread");
+        this.connectionManager = connectionManager;
         this.port = port;
     }
 
@@ -49,6 +55,7 @@ class ServerThread extends Thread implements IServerThread {
 
     @Override
     public void run() {
+        connectionManager.onServerStart();
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             // Každých 5 vteřin dojde k vyjímce SocketTimeoutException
             // To proto, že metoda serverSocket.accept() je blokující
@@ -62,6 +69,7 @@ class ServerThread extends Thread implements IServerThread {
                     final Socket socket = serverSocket.accept();
                     LOGGER.info("Server přijal nové spojení.");
 
+                    connectionManager.addClient(socket);
                 } catch (SocketTimeoutException ignored) {
                 }
             }
@@ -71,5 +79,6 @@ class ServerThread extends Thread implements IServerThread {
         }
 
         LOGGER.info("Ukončuji server.");
+        connectionManager.onServerStop();
     }
 }

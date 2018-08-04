@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import cz.stechy.chat.cmd.CmdParser;
 import cz.stechy.chat.cmd.IParameterProvider;
+import cz.stechy.chat.core.connection.IConnectionManagerFactory;
 
 /**
  * Továrna serverového vlákna
@@ -18,6 +19,12 @@ public class ServerThreadFactory implements IServerThreadFactory {
     // Výchozí velikost čekací fronty
     private static final int DEFAULT_WAITING_QUEUE_SIZE = 1;
 
+    private final IConnectionManagerFactory connectionManagerFactory;
+
+    @Inject
+    public ServerThreadFactory(IConnectionManagerFactory connectionManagerFactory) {
+        this.connectionManagerFactory = connectionManagerFactory;
+    }
 
     @Override
     public IServerThread getServerThread(IParameterProvider parameters) {
@@ -25,6 +32,6 @@ public class ServerThreadFactory implements IServerThreadFactory {
         final int maxClients = parameters.getInteger(CmdParser.CLIENTS, DEFAULT_MAX_CLIENTS);
         final int waitingQueueSize = parameters.getInteger(CmdParser.MAX_WAITING_QUEUE, DEFAULT_WAITING_QUEUE_SIZE);
 
-        return new ServerThread(port);
+        return new ServerThread(connectionManagerFactory.getConnectionManager(maxClients, waitingQueueSize), port);
     }
 }

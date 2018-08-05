@@ -2,6 +2,7 @@ package cz.stechy.chat.core.connection;
 
 import com.google.inject.Inject;
 import cz.stechy.chat.core.dispatcher.IClientDispatcher;
+import cz.stechy.chat.core.writer.IWriterThread;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -19,15 +20,18 @@ class ConnectionManager implements IConnectionManager {
     private final List<IClient> clients = new ArrayList<>();
 
     private final IClientDispatcher clientDispatcher;
+    // Zapisovací vlákno
+    private final IWriterThread writerThread;
     // Threadpool s vlákny pro jednotlivé klienty
     private final ExecutorService pool;
     // Maximální počet aktívně komunikujících klientů
     final int maxClients;
 
     @Inject
-    public ConnectionManager(IClientDispatcher clientDispatcher, ExecutorService pool,
-        int maxClients) {
+    public ConnectionManager(IClientDispatcher clientDispatcher, IWriterThread writerThread,
+        ExecutorService pool, int maxClients) {
         this.clientDispatcher = clientDispatcher;
+        this.writerThread = writerThread;
         this.pool = pool;
         this.maxClients = maxClients;
     }
@@ -56,12 +60,13 @@ class ConnectionManager implements IConnectionManager {
 
     @Override
     public void addClient(Socket socket) throws IOException {
-        insertClientToListOrQueue(new Client(socket));
+        insertClientToListOrQueue(new Client(socket, writerThread));
     }
 
     @Override
     public void onServerStart() {
         clientDispatcher.start();
+        writerThread.start();
     }
 
     @Override
@@ -75,5 +80,8 @@ class ConnectionManager implements IConnectionManager {
 
         LOGGER.info("Ukončuji client dispatcher.");
         clientDispatcher.shutdown();
+
+        LOGGER.info("Ukončuji writer thread.");
+        writerThread.shutdown();
     }
 }

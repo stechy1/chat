@@ -1,5 +1,6 @@
 package cz.stechy.chat.core.connection;
 
+import cz.stechy.chat.core.writer.IWriterThread;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -19,12 +20,14 @@ public class Client implements IClient, Runnable {
 
     private final Socket socket;
     private final ObjectOutputStream writer;
+    private final IWriterThread writerThread;
 
     private ConnectionClosedListener connectionClosedListener;
 
-    Client(Socket socket) throws IOException {
+    Client(Socket socket, IWriterThread writerThread) throws IOException {
         this.socket = socket;
         writer = new ObjectOutputStream(socket.getOutputStream());
+        this.writerThread = writerThread;
         LOGGER.info("Byl vytvořen nový klient.");
     }
 
@@ -41,7 +44,7 @@ public class Client implements IClient, Runnable {
 
     @Override
     public void sendMessageAsync(Object message) {
-        // TODO odeslat zprávu asynchronně
+        writerThread.sendMessage(writer, message);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cz.stechy.chat.core.connection;
 
 import com.google.inject.Inject;
+import cz.stechy.chat.core.dispatcher.IClientDispatcher;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -17,13 +18,16 @@ class ConnectionManager implements IConnectionManager {
     // Kolekce klientů, se kterými server aktivně komunikuje
     private final List<IClient> clients = new ArrayList<>();
 
+    private final IClientDispatcher clientDispatcher;
     // Threadpool s vlákny pro jednotlivé klienty
     private final ExecutorService pool;
     // Maximální počet aktívně komunikujících klientů
     final int maxClients;
 
     @Inject
-    public ConnectionManager(ExecutorService pool,int maxClients) {
+    public ConnectionManager(IClientDispatcher clientDispatcher, ExecutorService pool,
+        int maxClients) {
+        this.clientDispatcher = clientDispatcher;
         this.pool = pool;
         this.maxClients = maxClients;
     }
@@ -33,13 +37,20 @@ class ConnectionManager implements IConnectionManager {
             clients.add(client);
             client.setConnectionClosedListener(() -> {
                 clients.remove(client);
-
                 LOGGER.info("Počet připojených klientů: {}.", clients.size());
-
+                if (clientDispatcher.hasClientInQueue()) {
+                    LOGGER.info("V čekací listině se našel klient, který by rád komunikoval.");
+                    this.insertClientToListOrQueue(clientDispatcher.getClientFromQueue());
+                }
             });
             pool.submit(client);
         } else {
-            // TODO vložit klienta do čekací fronty
+            if (clientDispatcher.addClientToQueue(client)) {
+                LOGGER.info("Přidávám klienta na čekací listinu.");
+            } else {
+                LOGGER.warn("Odpojuji klienta od serveru. Je připojeno příliš mnoho uživatelů.");
+                client.close();
+            }
         }
     }
 
@@ -50,7 +61,7 @@ class ConnectionManager implements IConnectionManager {
 
     @Override
     public void onServerStart() {
-
+        clientDispatcher.start();
     }
 
     @Override
@@ -61,5 +72,8 @@ class ConnectionManager implements IConnectionManager {
         }
         LOGGER.info("Ukončuji činnost thread poolu.");
         pool.shutdown();
+
+        LOGGER.info("Ukončuji client dispatcher.");
+        clientDispatcher.shutdown();
     }
 }

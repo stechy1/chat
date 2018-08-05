@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Třída reprezentuje připojeného klienta a zprostředkovává komunikaci s klientem
  */
-class Client implements IClient, Runnable {
+public class Client implements IClient, Runnable {
 
     @SuppressWarnings("unused")
     private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);

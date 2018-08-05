@@ -2,6 +2,7 @@ package cz.stechy.chat.core.connection;
 
 import com.google.inject.Inject;
 import cz.stechy.chat.core.dispatcher.IClientDispatcher;
+import cz.stechy.chat.core.event.IEventBus;
 import cz.stechy.chat.core.writer.IWriterThread;
 import java.io.IOException;
 import java.net.Socket;
@@ -22,6 +23,8 @@ class ConnectionManager implements IConnectionManager {
     private final IClientDispatcher clientDispatcher;
     // Zapisovací vlákno
     private final IWriterThread writerThread;
+    // Event bus
+    private final IEventBus eventBus;
     // Threadpool s vlákny pro jednotlivé klienty
     private final ExecutorService pool;
     // Maximální počet aktívně komunikujících klientů
@@ -29,9 +32,10 @@ class ConnectionManager implements IConnectionManager {
 
     @Inject
     public ConnectionManager(IClientDispatcher clientDispatcher, IWriterThread writerThread,
-        ExecutorService pool, int maxClients) {
+        IEventBus eventBus, ExecutorService pool, int maxClients) {
         this.clientDispatcher = clientDispatcher;
         this.writerThread = writerThread;
+        this.eventBus = eventBus;
         this.pool = pool;
         this.maxClients = maxClients;
     }
@@ -41,6 +45,7 @@ class ConnectionManager implements IConnectionManager {
             clients.add(client);
             client.setConnectionClosedListener(() -> {
                 clients.remove(client);
+                eventBus.publishEvent(new ClientDisconnectedEvent(client));
                 LOGGER.info("Počet připojených klientů: {}.", clients.size());
                 if (clientDispatcher.hasClientInQueue()) {
                     LOGGER.info("V čekací listině se našel klient, který by rád komunikoval.");
@@ -48,6 +53,7 @@ class ConnectionManager implements IConnectionManager {
                 }
             });
             pool.submit(client);
+            eventBus.publishEvent(new ClientConnectedEvent(client));
         } else {
             if (clientDispatcher.addClientToQueue(client)) {
                 LOGGER.info("Přidávám klienta na čekací listinu.");
@@ -60,7 +66,7 @@ class ConnectionManager implements IConnectionManager {
 
     @Override
     public void addClient(Socket socket) throws IOException {
-        insertClientToListOrQueue(new Client(socket, writerThread));
+        insertClientToListOrQueue(new Client(socket, writerThread, eventBus));
     }
 
     @Override

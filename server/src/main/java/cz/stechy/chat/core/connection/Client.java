@@ -1,5 +1,6 @@
 package cz.stechy.chat.core.connection;
 
+import cz.stechy.chat.core.event.IEventBus;
 import cz.stechy.chat.core.writer.IWriterThread;
 import cz.stechy.chat.net.message.IMessage;
 import java.io.EOFException;
@@ -22,13 +23,15 @@ public class Client implements IClient, Runnable {
     private final Socket socket;
     private final ObjectOutputStream writer;
     private final IWriterThread writerThread;
+    private final IEventBus eventBus;
 
     private ConnectionClosedListener connectionClosedListener;
 
-    Client(Socket socket, IWriterThread writerThread) throws IOException {
+    Client(Socket socket, IWriterThread writerThread, IEventBus eventBus) throws IOException {
         this.socket = socket;
         writer = new ObjectOutputStream(socket.getOutputStream());
         this.writerThread = writerThread;
+        this.eventBus = eventBus;
         LOGGER.info("Byl vytvořen nový klient.");
     }
 
@@ -61,7 +64,7 @@ public class Client implements IClient, Runnable {
             IMessage received;
             while ((received = (IMessage) reader.readObject()) != null) {
                 LOGGER.info(String.format("Bylo přijato: '%s'", received));
-                sendMessageAsync(received);
+                eventBus.publishEvent(new MessageReceivedEvent(received, this));
             }
         } catch (EOFException |SocketException e) {
             LOGGER.info("Klient ukončil spojení.");

@@ -1,5 +1,7 @@
 package cz.stechy.chat.core.writer;
 
+import com.google.inject.Singleton;
+import cz.stechy.chat.net.message.IMessage;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.Queue;
@@ -8,6 +10,7 @@ import java.util.concurrent.Semaphore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Singleton
 public class WriterThread extends Thread implements IWriterThread {
 
     @SuppressWarnings("unused")
@@ -23,7 +26,7 @@ public class WriterThread extends Thread implements IWriterThread {
     }
 
     @Override
-    public void sendMessage(ObjectOutputStream writer, Object message) {
+    public void sendMessage(ObjectOutputStream writer, IMessage message) {
         messageQueue.add(new QueueTuple(writer, message));
         if (!working) {
             working = true;
@@ -73,10 +76,10 @@ public class WriterThread extends Thread implements IWriterThread {
     }
 
     private static final class QueueTuple {
-        final Object message;
+        final IMessage message;
         final ObjectOutputStream writer;
 
-        private QueueTuple(ObjectOutputStream writer, Object message) {
+        private QueueTuple(ObjectOutputStream writer, IMessage message) {
             this.message = message;
             this.writer = writer;
         }

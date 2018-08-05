@@ -1,6 +1,7 @@
 package cz.stechy.chat.core.dispatcher;
 
 import cz.stechy.chat.core.connection.Client;
+import cz.stechy.chat.net.message.TextMessage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,7 @@ class ClientDispatcher extends Thread implements IClientDispatcher {
                 final int count = waitingQueue.size();
                 waitingQueue.forEach(client -> {
                     try {
-                        client.sendMessage("count: " + count);
+                        client.sendMessage(new TextMessage("count: " + count));
                     } catch (IOException e) {
                         LOGGER.info("Klient neudržel spojení, musím se ho zbavit.");
                         clientsToRemove.add(client);

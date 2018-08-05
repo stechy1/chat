@@ -9,6 +9,8 @@ import cz.stechy.chat.core.dispatcher.ClientDispatcherFactory;
 import cz.stechy.chat.core.dispatcher.IClientDispatcherFactory;
 import cz.stechy.chat.core.server.IServerThreadFactory;
 import cz.stechy.chat.core.server.ServerThreadFactory;
+import cz.stechy.chat.core.writer.IWriterThread;
+import cz.stechy.chat.core.writer.WriterThread;
 
 public class ServerModule extends AbstractModule {
 
@@ -18,5 +20,6 @@ public class ServerModule extends AbstractModule {
         bind(IServerThreadFactory.class).to(ServerThreadFactory.class);
         bind(IConnectionManagerFactory.class).to(ConnectionManagerFactory.class);
         bind(IClientDispatcherFactory.class).to(ClientDispatcherFactory.class);
+        bind(IWriterThread.class).to(WriterThread.class);
     }
 }

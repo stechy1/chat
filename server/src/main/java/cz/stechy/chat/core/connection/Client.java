@@ -1,6 +1,7 @@
 package cz.stechy.chat.core.connection;
 
 import cz.stechy.chat.core.writer.IWriterThread;
+import cz.stechy.chat.net.message.IMessage;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -43,12 +44,12 @@ public class Client implements IClient, Runnable {
     }
 
     @Override
-    public void sendMessageAsync(Object message) {
+    public void sendMessageAsync(IMessage message) {
         writerThread.sendMessage(writer, message);
     }
 
     @Override
-    public void sendMessage(Object message) throws IOException {
+    public void sendMessage(IMessage message) throws IOException {
         writer.writeObject(message);
     }
 
@@ -57,9 +58,10 @@ public class Client implements IClient, Runnable {
         LOGGER.info("Spouštím nekonečnou smyčku pro komunikaci s klientem.");
         try (ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
             LOGGER.info("InputStream byl úspěšně vytvořen.");
-            Object received;
-            while ((received = reader.readObject()) != null) {
+            IMessage received;
+            while ((received = (IMessage) reader.readObject()) != null) {
                 LOGGER.info(String.format("Bylo přijato: '%s'", received));
+                sendMessageAsync(received);
             }
         } catch (EOFException |SocketException e) {
             LOGGER.info("Klient ukončil spojení.");

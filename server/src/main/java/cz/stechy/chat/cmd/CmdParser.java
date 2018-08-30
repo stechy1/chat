@@ -11,6 +11,10 @@ public class CmdParser implements IParameterProvider {
     public static final String CLIENTS = "clients";
     // Konstanta parametru definujícího maximální počet klientů čekajících ve frontě na spojení
     public static final String MAX_WAITING_QUEUE = "max_waiting_queue";
+    // Adresa, na které se budou vysílat multicastové packety
+    public static final String MULTICAST_ADDRESS = "multicast_address";
+    // Port, na kterém se budou vysílat multicastové packety
+    public static final String MULTICAST_PORT = "multicast_port";
 
     private final Map<String, String> map = new HashMap<>();
 

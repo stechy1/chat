@@ -9,6 +9,8 @@ import cz.stechy.chat.core.dispatcher.ClientDispatcherFactory;
 import cz.stechy.chat.core.dispatcher.IClientDispatcherFactory;
 import cz.stechy.chat.core.event.EventBus;
 import cz.stechy.chat.core.event.IEventBus;
+import cz.stechy.chat.core.multicaster.IMulticastSenderFactory;
+import cz.stechy.chat.core.multicaster.MulticastSenderFactory;
 import cz.stechy.chat.core.server.IServerThreadFactory;
 import cz.stechy.chat.core.server.ServerThreadFactory;
 import cz.stechy.chat.core.writer.IWriterThread;
@@ -24,5 +26,6 @@ public class ServerModule extends AbstractModule {
         bind(IClientDispatcherFactory.class).to(ClientDispatcherFactory.class);
         bind(IWriterThread.class).to(WriterThread.class);
         bind(IEventBus.class).to(EventBus.class);
+        bind(IMulticastSenderFactory.class).to(MulticastSenderFactory.class);
     }
 }

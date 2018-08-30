@@ -1,5 +1,8 @@
 package cz.stechy.chat.net.message;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -28,5 +31,16 @@ public interface IMessage extends Serializable {
      */
     default boolean isSuccess() {
         return true;
+    }
+
+    default byte[] toByteArray() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(this);
+        oos.writeByte(0);
+        final byte[] bytes = baos.toByteArray();
+        assert bytes.length < 1024;
+
+        return bytes;
     }
 }

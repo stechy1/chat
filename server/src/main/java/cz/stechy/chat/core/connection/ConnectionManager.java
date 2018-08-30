@@ -65,6 +65,16 @@ class ConnectionManager implements IConnectionManager {
     }
 
     @Override
+    public int getConnectedClientCount() {
+        return clients.size();
+    }
+
+    @Override
+    public int getMaxClients() {
+        return maxClients;
+    }
+
+    @Override
     public void addClient(Socket socket) throws IOException {
         insertClientToListOrQueue(new Client(socket, writerThread, eventBus));
     }

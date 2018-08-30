@@ -26,4 +26,17 @@ public interface IConnectionManager {
      */
     void onServerStop();
 
+    /**
+     * Vrátí počet připojených, aktivně komunikujících klientů
+     *
+     * @return Počet aktivně komunikujících klientů
+     */
+    int getConnectedClientCount();
+
+    /**
+     * Vrátí maximální počet připojených klientů, kteří budou moci aktivně komunikovat
+     *
+     * @return Maximální počet připojených klientů
+     */
+    int getMaxClients();
 }

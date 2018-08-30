@@ -5,6 +5,7 @@ import com.google.inject.Singleton;
 import cz.stechy.chat.cmd.CmdParser;
 import cz.stechy.chat.cmd.IParameterProvider;
 import cz.stechy.chat.core.connection.IConnectionManagerFactory;
+import cz.stechy.chat.core.multicaster.IMulticastSenderFactory;
 
 /**
  * Továrna serverového vlákna
@@ -20,10 +21,13 @@ public class ServerThreadFactory implements IServerThreadFactory {
     private static final int DEFAULT_WAITING_QUEUE_SIZE = 1;
 
     private final IConnectionManagerFactory connectionManagerFactory;
+    private final IMulticastSenderFactory multicastSenderFactory;
 
     @Inject
-    public ServerThreadFactory(IConnectionManagerFactory connectionManagerFactory) {
+    public ServerThreadFactory(IConnectionManagerFactory connectionManagerFactory,
+        IMulticastSenderFactory multicastSenderFactory) {
         this.connectionManagerFactory = connectionManagerFactory;
+        this.multicastSenderFactory = multicastSenderFactory;
     }
 
     @Override
@@ -32,6 +36,7 @@ public class ServerThreadFactory implements IServerThreadFactory {
         final int maxClients = parameters.getInteger(CmdParser.CLIENTS, DEFAULT_MAX_CLIENTS);
         final int waitingQueueSize = parameters.getInteger(CmdParser.MAX_WAITING_QUEUE, DEFAULT_WAITING_QUEUE_SIZE);
 
-        return new ServerThread(connectionManagerFactory.getConnectionManager(maxClients, waitingQueueSize), port);
+        return new ServerThread(connectionManagerFactory.getConnectionManager(maxClients, waitingQueueSize),
+            multicastSenderFactory, port);
     }
 }

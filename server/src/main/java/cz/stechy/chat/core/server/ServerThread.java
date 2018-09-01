@@ -4,6 +4,7 @@ import com.google.inject.Inject;
 import cz.stechy.chat.core.connection.IConnectionManager;
 import cz.stechy.chat.core.multicaster.IMulticastSender;
 import cz.stechy.chat.core.multicaster.IMulticastSenderFactory;
+import cz.stechy.chat.net.message.IMessage;
 import cz.stechy.chat.net.message.ServerStatusMessage;
 import cz.stechy.chat.net.message.ServerStatusMessage.ServerStatus;
 import cz.stechy.chat.net.message.ServerStatusMessage.ServerStatusData;
@@ -38,6 +39,8 @@ class ServerThread extends Thread implements IServerThread {
     private final IConnectionManager connectionManager;
     // Odesílač informací o serveru
     private final IMulticastSender multicastSender;
+    // Název serveru
+    private final String serverName;
     // Číslo portu
     private final int port;
 
@@ -50,23 +53,25 @@ class ServerThread extends Thread implements IServerThread {
 
     /**
      * Vytvoří novou instanci vlákna serveru
-     *  @param connectionManager {@link IConnectionManager}
+     * @param connectionManager {@link IConnectionManager}
      * @param multicastSenderFactory {@link IMulticastSenderFactory}
+     * @param serverName Název serveru
      * @param port Číslo portu
      */
     @Inject
     ServerThread(IConnectionManager connectionManager,
-        IMulticastSenderFactory multicastSenderFactory, int port) {
+        IMulticastSenderFactory multicastSenderFactory, String serverName, int port) {
         super("ServerThread");
         this.connectionManager = connectionManager;
         this.multicastSender = multicastSenderFactory.getMulticastSender(this);
+        this.serverName = serverName;
         this.port = port;
     }
 
     // endregion
 
     @Override
-    public ServerStatusMessage getServerStatusMessage() {
+    public IMessage getServerStatusMessage() {
         final int connectedClients = connectionManager.getConnectedClientCount();
         final int maxClients = connectionManager.getMaxClients();
         final int delta = maxClients - connectedClients;
@@ -77,7 +82,6 @@ class ServerThread extends Thread implements IServerThread {
             status = ServerStatus.HAVE_SPACE;
         }
 
-        String serverName = "Default DrD server";
         return new ServerStatusMessage(new ServerStatusData(
             ID, status, connectedClients, maxClients, serverName, port));
     }

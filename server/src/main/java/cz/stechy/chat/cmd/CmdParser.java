@@ -5,6 +5,8 @@ import java.util.Map;
 
 public class CmdParser implements IParameterProvider {
 
+    // Název serveru
+    public static final String SERVER_NAME = "server_name";
     // Port, na kterém bude server naslouchat
     public static final String PORT = "port";
     // Konstanta parametru definujícího maximální počet klientů, kterí se můžou připojit k serveru

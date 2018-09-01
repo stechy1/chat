@@ -13,6 +13,8 @@ import cz.stechy.chat.core.multicaster.IMulticastSenderFactory;
 @Singleton
 public class ServerThreadFactory implements IServerThreadFactory {
 
+    // Výchozí název serveru
+    private static final String DEFAULT_SERVER_NAME = "Default server name";
     // Výchozí hodnota portu
     private static final int DEFAULT_SERVER_PORT = 15378;
     // Výchozí maximální počet klientů
@@ -32,11 +34,12 @@ public class ServerThreadFactory implements IServerThreadFactory {
 
     @Override
     public IServerThread getServerThread(IParameterProvider parameters) {
+        final String serverName = parameters.getString(CmdParser.SERVER_NAME, DEFAULT_SERVER_NAME);
         final int port = parameters.getInteger(CmdParser.PORT, DEFAULT_SERVER_PORT);
         final int maxClients = parameters.getInteger(CmdParser.CLIENTS, DEFAULT_MAX_CLIENTS);
         final int waitingQueueSize = parameters.getInteger(CmdParser.MAX_WAITING_QUEUE, DEFAULT_WAITING_QUEUE_SIZE);
 
         return new ServerThread(connectionManagerFactory.getConnectionManager(maxClients, waitingQueueSize),
-            multicastSenderFactory, port);
+            multicastSenderFactory, serverName, port);
     }
 }

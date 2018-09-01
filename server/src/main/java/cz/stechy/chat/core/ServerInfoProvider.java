@@ -1,5 +1,6 @@
 package cz.stechy.chat.core;
 
+import cz.stechy.chat.net.message.IMessage;
 import cz.stechy.chat.net.message.ServerStatusMessage;
 
 /**
@@ -12,6 +13,6 @@ public interface ServerInfoProvider {
      *
      * @return {@link ServerStatusMessage}
      */
-    ServerStatusMessage getServerStatusMessage();
+    IMessage getServerStatusMessage();
 
 }

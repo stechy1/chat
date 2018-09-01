@@ -1,6 +1,5 @@
 package cz.stechy.chat.core.multicaster;
 
-import com.google.inject.Singleton;
 import cz.stechy.chat.cmd.CmdParser;
 import cz.stechy.chat.cmd.IParameterFactory;
 import cz.stechy.chat.cmd.IParameterProvider;
@@ -13,7 +12,6 @@ import java.net.InetAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Singleton
 class MulticastSender extends Thread implements IMulticastSender {
 
     // region Constants
@@ -37,11 +35,12 @@ class MulticastSender extends Thread implements IMulticastSender {
     // Poskytovatel informací o serveru
     private final ServerInfoProvider serverInfoProvider;
 
-    private IParameterProvider parameterProvider;
     // Socket, na kterém se posílají zprávy
     private DatagramSocket socket;
     // Broadcast adresa
     private InetAddress broadcastAddress;
+    // Broadcast port
+    private int port;
     // Poskytovatel informací o serveru
     private boolean interrupt = false;
 
@@ -59,19 +58,18 @@ class MulticastSender extends Thread implements IMulticastSender {
 
     // region Private methods
 
+    /**
+     * Inicializuje broadcast adresu, socket a port
+     */
     private void init() {
-        this.parameterProvider = parameterFactory.getParameters();
-        InetAddress address = null;
-        DatagramSocket datagramSocket = null;
+        final IParameterProvider parameterProvider = parameterFactory.getParameters();
         try {
-            address = InetAddress.getByName(parameterProvider
+            this.broadcastAddress = InetAddress.getByName(parameterProvider
                 .getString(CmdParser.MULTICAST_ADDRESS, DEFAULT_MULTICAST_ADDRESS));
-            datagramSocket = new DatagramSocket();
+            this.socket = new DatagramSocket();
+            this.port = parameterProvider.getInteger(CmdParser.MULTICAST_PORT, DEFAULT_MULTICAST_PORT);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            this.socket = datagramSocket;
-            this.broadcastAddress = address;
         }
     }
 
@@ -94,10 +92,7 @@ class MulticastSender extends Thread implements IMulticastSender {
                     .getServerStatusMessage();
                 final byte[] data = serverStatusMessage.toByteArray();
                 final DatagramPacket datagramPacket = new DatagramPacket(
-                    data,
-                    data.length,
-                    broadcastAddress,
-                    parameterProvider.getInteger(CmdParser.MULTICAST_PORT, DEFAULT_MULTICAST_PORT));
+                    data, data.length, broadcastAddress, port);
                 LOGGER.debug("Odesílám datagram se zprávou: " + serverStatusMessage.toString());
                 this.socket.send(datagramPacket);
             } catch (IOException e) {
@@ -118,6 +113,4 @@ class MulticastSender extends Thread implements IMulticastSender {
             join();
         } catch (InterruptedException ignored) { }
     }
-
-
 }

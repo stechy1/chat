@@ -33,6 +33,12 @@ public interface IMessage extends Serializable {
         return true;
     }
 
+    /**
+     * Převede objekt na balík dat
+     *
+     * @return Pole bytů
+     * @throws IOException Pokud se nepodaří objekt serializovat
+     */
     default byte[] toByteArray() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);

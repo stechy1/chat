@@ -4,14 +4,23 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Zpráva obsahující informace o stavu serveru
+ */
 public class ServerStatusMessage implements IMessage {
 
     private static final long serialVersionUID = -1429760060957272567L;
 
     public static final String MESSAGE_TYPE = "server-status";
 
+    // Data s informacemi o serveru
     private final ServerStatusData statusData;
 
+    /**
+     * Vytvoří novou zprávu s informacemi o serveru
+     *
+     * @param statusData {@link ServerStatusData} Data s informacemi o serveru
+     */
     public ServerStatusMessage(ServerStatusData statusData) {
         this.statusData = statusData;
     }
@@ -31,13 +40,13 @@ public class ServerStatusMessage implements IMessage {
         return String.valueOf(getData());
     }
 
-    public enum ServerStatus {
-        EMPTY, HAVE_SPACE, FULL
-    }
-
     public static final class ServerStatusData implements Serializable {
 
         private static final long serialVersionUID = -4288671744361722044L;
+
+        public enum ServerStatus {
+            EMPTY, HAVE_SPACE, FULL
+        }
 
         public final UUID serverID;
         public final ServerStatus serverStatus;
@@ -48,12 +57,13 @@ public class ServerStatusMessage implements IMessage {
 
         /**
          * Vytvoří novou instanci reprezentující informace o stavu serveru
-         *  @param serverID
+         *
+         * @param serverID ID serveru
          * @param serverStatus {@link ServerStatus} stav serveru
          * @param clientCount Počet aktuálně připojených klientů
          * @param maxClients Počet maximálně připojených klientů
          * @param serverName Název serveru
-         * @param port
+         * @param port Port, na kterém server naslouchá
          */
         public ServerStatusData(UUID serverID, ServerStatus serverStatus, int clientCount,
             int maxClients, String serverName, int port) {
@@ -84,7 +94,6 @@ public class ServerStatusMessage implements IMessage {
 
         @Override
         public int hashCode() {
-
             return Objects.hash(serverID, serverStatus, clientCount, maxClients, serverName, port);
         }
 

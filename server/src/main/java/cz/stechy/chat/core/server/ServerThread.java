@@ -7,7 +7,6 @@ import cz.stechy.chat.core.multicaster.IMulticastSenderFactory;
 import cz.stechy.chat.net.message.IMessage;
 import cz.stechy.chat.net.message.ServerStatusMessage;
 import cz.stechy.chat.net.message.ServerStatusMessage.ServerStatusData;
-import cz.stechy.chat.net.message.ServerStatusMessage.ServerStatusData.ServerStatus;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -74,16 +73,9 @@ class ServerThread extends Thread implements IServerThread {
     public IMessage getServerStatusMessage() {
         final int connectedClients = connectionManager.getConnectedClientCount();
         final int maxClients = connectionManager.getMaxClients();
-        final int delta = maxClients - connectedClients;
-        ServerStatus status = ServerStatus.EMPTY;
-        if (delta == 0) {
-            status = ServerStatus.FULL;
-        } else if (delta > 0 && delta < maxClients) {
-            status = ServerStatus.HAVE_SPACE;
-        }
 
         return new ServerStatusMessage(new ServerStatusData(
-            ID, status, connectedClients, maxClients, serverName, port));
+            ID, connectedClients, maxClients, serverName, port));
     }
 
     @Override

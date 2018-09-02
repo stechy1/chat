@@ -59,20 +59,27 @@ public class ServerStatusMessage implements IMessage {
          * Vytvoří novou instanci reprezentující informace o stavu serveru
          *
          * @param serverID ID serveru
-         * @param serverStatus {@link ServerStatus} stav serveru
          * @param clientCount Počet aktuálně připojených klientů
          * @param maxClients Počet maximálně připojených klientů
          * @param serverName Název serveru
          * @param port Port, na kterém server naslouchá
          */
-        public ServerStatusData(UUID serverID, ServerStatus serverStatus, int clientCount,
+        public ServerStatusData(UUID serverID, int clientCount,
             int maxClients, String serverName, int port) {
             this.serverID = serverID;
-            this.serverStatus = serverStatus;
             this.clientCount = clientCount;
             this.maxClients = maxClients;
             this.serverName = serverName;
             this.port = port;
+
+            final int delta = maxClients - clientCount;
+            ServerStatus status = ServerStatus.EMPTY;
+            if (delta == 0) {
+                status = ServerStatus.FULL;
+            } else if (delta > 0 && delta < maxClients) {
+                status = ServerStatus.HAVE_SPACE;
+            }
+            this.serverStatus = status;
         }
 
         @Override

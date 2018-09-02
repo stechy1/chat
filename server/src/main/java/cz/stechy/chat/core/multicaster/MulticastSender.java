@@ -4,7 +4,7 @@ import cz.stechy.chat.cmd.CmdParser;
 import cz.stechy.chat.cmd.IParameterFactory;
 import cz.stechy.chat.cmd.IParameterProvider;
 import cz.stechy.chat.core.ServerInfoProvider;
-import cz.stechy.chat.net.message.ServerStatusMessage;
+import cz.stechy.chat.net.message.IMessage;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -88,7 +88,7 @@ class MulticastSender extends Thread implements IMulticastSender {
 
         while(!interrupt) {
             try {
-                final ServerStatusMessage serverStatusMessage = serverInfoProvider
+                final IMessage serverStatusMessage = serverInfoProvider
                     .getServerStatusMessage();
                 final byte[] data = serverStatusMessage.toByteArray();
                 final DatagramPacket datagramPacket = new DatagramPacket(

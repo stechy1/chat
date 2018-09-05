@@ -17,6 +17,8 @@ public class CmdParser implements IParameterProvider {
     public static final String MULTICAST_ADDRESS = "multicast_address";
     // Port, na kterém se budou vysílat multicastové packety
     public static final String MULTICAST_PORT = "multicast_port";
+    // Cesta ke složce s pluginy
+    public static final String PLUGINS_PATH = "plugins_path";
 
     private final Map<String, String> map = new HashMap<>();
 

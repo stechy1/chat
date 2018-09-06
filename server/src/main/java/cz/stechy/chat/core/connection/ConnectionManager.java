@@ -9,13 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ConnectionManager implements IConnectionManager {
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
 
     // Kolekce klientů, se kterými server aktivně komunikuje
     private final List<IClient> clients = new ArrayList<>();
@@ -46,9 +41,9 @@ class ConnectionManager implements IConnectionManager {
             client.setConnectionClosedListener(() -> {
                 clients.remove(client);
                 eventBus.publishEvent(new ClientDisconnectedEvent(client));
-                LOGGER.info("Počet připojených klientů: {}.", clients.size());
+                System.out.println("Počet připojených klientů: " + clients.size());
                 if (clientDispatcher.hasClientInQueue()) {
-                    LOGGER.info("V čekací listině se našel klient, který by rád komunikoval.");
+                    System.out.println("V čekací listině se našel klient, který by rád komunikoval.");
                     this.insertClientToListOrQueue(clientDispatcher.getClientFromQueue());
                 }
             });
@@ -56,9 +51,9 @@ class ConnectionManager implements IConnectionManager {
             eventBus.publishEvent(new ClientConnectedEvent(client));
         } else {
             if (clientDispatcher.addClientToQueue(client)) {
-                LOGGER.info("Přidávám klienta na čekací listinu.");
+                System.out.println("Přidávám klienta na čekací listinu.");
             } else {
-                LOGGER.warn("Odpojuji klienta od serveru. Je připojeno příliš mnoho uživatelů.");
+                System.out.println("Odpojuji klienta od serveru. Je připojeno příliš mnoho uživatelů.");
                 client.close();
             }
         }
@@ -77,17 +72,17 @@ class ConnectionManager implements IConnectionManager {
 
     @Override
     public void onServerStop() {
-        LOGGER.info("Odpojuji připojené klienty.");
+        System.out.println("Odpojuji připojené klienty.");
         for (IClient client : clients) {
             client.close();
         }
-        LOGGER.info("Ukončuji činnost thread poolu.");
+        System.out.println("Ukončuji činnost thread poolu.");
         pool.shutdown();
 
-        LOGGER.info("Ukončuji client dispatcher.");
+        System.out.println("Ukončuji client dispatcher.");
         clientDispatcher.shutdown();
 
-        LOGGER.info("Ukončuji writer thread.");
+        System.out.println("Ukončuji writer thread.");
         writerThread.shutdown();
     }
 }

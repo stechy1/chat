@@ -13,15 +13,10 @@ import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class PluginModule extends AbstractModule {
 
     // region Constants
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(PluginModule.class);
 
     public static final String PLUGIN_IDENTIFIER = "Plugin-Class";
 
@@ -74,7 +69,7 @@ public class PluginModule extends AbstractModule {
             final String pluginClassName = attributes.getValue(PLUGIN_IDENTIFIER);
             final Class<?> clazz = Class.forName(pluginClassName, true, loader);
             final IPlugin plugin = clazz.asSubclass(IPlugin.class).newInstance();
-            LOGGER.info("Přidávám plugin: " + plugin.getName());
+            System.out.println("Přidávám plugin: " + plugin.getName());
             return Optional.of(plugin);
         } catch (Exception e) {
             return Optional.empty();

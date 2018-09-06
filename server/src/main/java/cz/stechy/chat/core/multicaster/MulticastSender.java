@@ -9,15 +9,10 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class MulticastSender extends Thread implements IMulticastSender {
 
     // region Constants
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(MulticastSender.class);
 
     // Interval mezi jednotlivými multicastovými packety
     private static final long SLEEP_TIME = 2000L;
@@ -93,10 +88,11 @@ class MulticastSender extends Thread implements IMulticastSender {
                 final byte[] data = serverStatusMessage.toByteArray();
                 final DatagramPacket datagramPacket = new DatagramPacket(
                     data, data.length, broadcastAddress, port);
-                LOGGER.debug("Odesílám datagram se zprávou: " + serverStatusMessage.toString());
+                System.out.println("Odesílám datagram se zprávou: " + serverStatusMessage.toString());
                 this.socket.send(datagramPacket);
             } catch (IOException e) {
-                LOGGER.error("Nezdařilo se poslat multicast datagram.", e);
+                System.out.println("Nezdařilo se poslat multicast datagram.");
+                e.printStackTrace();
                 break;
             }
 

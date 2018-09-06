@@ -78,7 +78,7 @@ class ConnectionManager implements IConnectionManager {
         System.out.println("Ukončuji client dispatcher.");
         clientDispatcher.shutdown();
 
-        LOGGER.info("Ukončuji writer thread.");
+        System.out.println("Ukončuji writer thread.");
         writerThread.shutdown();
     }
 }

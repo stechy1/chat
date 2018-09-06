@@ -7,13 +7,8 @@ import java.util.Collection;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ClientDispatcher extends Thread implements IClientDispatcher {
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientDispatcher.class);
 
     private static final int SLEEP_TIME = 5000;
 
@@ -35,32 +30,32 @@ class ClientDispatcher extends Thread implements IClientDispatcher {
 
     @Override
     public void run() {
-        LOGGER.info("Spouštím client dispatchera.");
+        System.out.println("Spouštím client dispatchera.");
         while(!interupt) {
             while(waitingQueue.isEmpty() && !interupt) {
                 try {
-                    LOGGER.info("Jdu spát na semaforu.");
+                    System.out.println("Jdu spát na semaforu.");
                     semaphore.acquire();
                 } catch (InterruptedException ignored) {}
             }
 
             if (interupt) {
-                LOGGER.info("Přidávám všechny klienty na seznam pro ukončení spojení.");
+                System.out.println("Přidávám všechny klienty na seznam pro ukončení spojení.");
                 clientsToRemove.addAll(waitingQueue);
             } else {
-                LOGGER.info("Posílám zprávu všem klientům.");
+                System.out.println("Posílám zprávu všem klientům.");
                 final int count = waitingQueue.size();
                 waitingQueue.forEach(client -> {
                     try {
                         client.sendMessage("count: " + count);
                     } catch (IOException e) {
-                        LOGGER.info("Klient neudržel spojení, musím se ho zbavit.");
+                        System.out.println("Klient neudržel spojení, musím se ho zbavit.");
                         clientsToRemove.add(client);
                     }
                 });
             }
 
-            LOGGER.info("Zbavuji se všech klientů, kteří neudrželi spojení, nebo bylo potřeba spojení s nimi ukončit.");
+            System.out.println("Zbavuji se všech klientů, kteří neudrželi spojení, nebo bylo potřeba spojení s nimi ukončit.");
             waitingQueue.removeAll(clientsToRemove);
             for (Client client : clientsToRemove) {
                 client.close();
@@ -72,7 +67,7 @@ class ClientDispatcher extends Thread implements IClientDispatcher {
             } catch (InterruptedException ignored) {}
         }
 
-        LOGGER.info("Client dispatcher končí.");
+        System.out.println("Client dispatcher končí.");
     }
 
     @Override

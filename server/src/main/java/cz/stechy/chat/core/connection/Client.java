@@ -7,16 +7,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Třída reprezentuje připojeného klienta a zprostředkovává komunikaci s klientem
  */
 public class Client implements IClient, Runnable {
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(Client.class);
 
     private final Socket socket;
     private final ObjectOutputStream writer;
@@ -28,17 +23,18 @@ public class Client implements IClient, Runnable {
         this.socket = socket;
         writer = new ObjectOutputStream(socket.getOutputStream());
         this.writerThread = writerThread;
-        LOGGER.info("Byl vytvořen nový klient.");
+        System.out.println("Byl vytvořen nový klient.");
     }
 
     @Override
     public void close() {
         try {
-            LOGGER.info("Uzavírám socket.");
+            System.out.println("Uzavírám socket.");
             socket.close();
-            LOGGER.info("Socket byl úspěšně uzavřen.");
+            System.out.println("Socket byl úspěšně uzavřen.");
         } catch (IOException e) {
-            LOGGER.error("Socket se nepodařilo uzavřít!", e);
+            System.out.println("Socket se nepodařilo uzavřít!");
+            e.printStackTrace();
         }
     }
 
@@ -54,24 +50,27 @@ public class Client implements IClient, Runnable {
 
     @Override
     public void run() {
-        LOGGER.info("Spouštím nekonečnou smyčku pro komunikaci s klientem.");
+        System.out.println("Spouštím nekonečnou smyčku pro komunikaci s klientem.");
         try (ObjectInputStream reader = new ObjectInputStream(socket.getInputStream())) {
-            LOGGER.info("InputStream byl úspěšně vytvořen.");
+            System.out.println("InputStream byl úspěšně vytvořen.");
             Object received;
             while ((received = reader.readObject()) != null) {
-                LOGGER.info(String.format("Bylo přijato: '%s'", received));
+                System.out.println(String.format("Bylo přijato: '%s'", received));
             }
         } catch (EOFException |SocketException e) {
-            LOGGER.info("Klient ukončil spojení.");
+            System.out.println("Klient ukončil spojení.");
         } catch (IOException e) {
-            LOGGER.warn("Nastala neočekávaná vyjímka.", e);
+            System.out.println("Nastala neočekávaná vyjímka.");
+            e.printStackTrace();
         } catch (ClassNotFoundException e) {
             // Nikdy by nemělo nastat
-            LOGGER.error("Nebyla nalezena třída.", e);
+            System.out.println("Nebyla nalezena třída.");
+            e.printStackTrace();
         } catch (Exception e) {
-            LOGGER.error("Neznámá chyba.", e);
+            System.out.println("Neznámá chyba.");
+            e.printStackTrace();
         } finally {
-            LOGGER.info("Volám connectionClosedListener.");
+            System.out.println("Volám connectionClosedListener.");
             if (connectionClosedListener != null) {
                 connectionClosedListener.onConnectionClosed();
             }

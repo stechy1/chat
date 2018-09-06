@@ -28,6 +28,7 @@ public class Server {
 
     private void run(String[]args) throws IOException {
         final IParameterProvider parameters = parameterFactory.getParameters(args);
+        System.out.println("Maximalni pocet klientu: " + parameters.getInteger(CmdParser.CLIENTS));
         final IServerThread serverThread = serverThreadFactory.getServerThread(parameters);
 
         LOGGER.info("Spouštím vlákno serveru.");

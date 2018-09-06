@@ -6,13 +6,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ConnectionManager implements IConnectionManager {
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionManager.class);
 
     // Kolekce klientů, se kterými server aktivně komunikuje
     private final List<IClient> clients = new ArrayList<>();
@@ -34,7 +29,7 @@ class ConnectionManager implements IConnectionManager {
             client.setConnectionClosedListener(() -> {
                 clients.remove(client);
 
-                LOGGER.info("Počet připojených klientů: {}.", clients.size());
+                System.out.println("Počet připojených klientů: " + clients.size());
 
             });
             pool.submit(client);
@@ -55,11 +50,11 @@ class ConnectionManager implements IConnectionManager {
 
     @Override
     public void onServerStop() {
-        LOGGER.info("Odpojuji připojené klienty.");
+        System.out.println("Odpojuji připojené klienty.");
         for (IClient client : clients) {
             client.close();
         }
-        LOGGER.info("Ukončuji činnost thread poolu.");
+        System.out.println("Ukončuji činnost thread poolu.");
         pool.shutdown();
     }
 }

@@ -12,8 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.UUID;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Vlákno serveru
@@ -21,9 +19,6 @@ import org.slf4j.LoggerFactory;
 class ServerThread extends Thread implements IServerThread {
 
     // region Constants
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServerThread.class);
 
     // Unikátní ID serveru
     private static final UUID ID = UUID.randomUUID();
@@ -52,6 +47,7 @@ class ServerThread extends Thread implements IServerThread {
 
     /**
      * Vytvoří novou instanci vlákna serveru
+     *
      * @param connectionManager {@link IConnectionManager}
      * @param multicastSenderFactory {@link IMulticastSenderFactory}
      * @param serverName Název serveru
@@ -101,13 +97,12 @@ class ServerThread extends Thread implements IServerThread {
             // To proto, že metoda serverSocket.accept() je blokující
             // a my bychom neměli šanci činnost vlákna ukončit
             serverSocket.setSoTimeout(SOCKET_TIMEOUT);
-            LOGGER
-                .info(String.format("Server naslouchá na portu: %d.", serverSocket.getLocalPort()));
+            System.out.println(String.format("Server naslouchá na portu: %d.", serverSocket.getLocalPort()));
             // Nové vlákno serveru
             while (running) {
                 try {
                     final Socket socket = serverSocket.accept();
-                    LOGGER.info("Server přijal nové spojení.");
+                    System.out.println("Server přijal nové spojení.");
 
                     connectionManager.addClient(socket);
                 } catch (SocketTimeoutException ignored) {
@@ -115,10 +110,11 @@ class ServerThread extends Thread implements IServerThread {
             }
 
         } catch (IOException e) {
-            LOGGER.error("Chyba v server socketu.", e);
+            System.out.println("Chyba v server socketu.");
+            e.printStackTrace();
         }
 
-        LOGGER.info("Ukončuji server.");
+        System.out.println("Ukončuji server.");
         multicastSender.shutdown();
         connectionManager.onServerStop();
     }

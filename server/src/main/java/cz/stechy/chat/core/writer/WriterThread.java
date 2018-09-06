@@ -7,14 +7,9 @@ import java.io.ObjectOutputStream;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Singleton
 public class WriterThread extends Thread implements IWriterThread {
-
-    @SuppressWarnings("unused")
-    private static final Logger LOGGER = LoggerFactory.getLogger(WriterThread.class);
 
     private final Semaphore semaphore = new Semaphore(0);
     private final Queue<QueueTuple> messageQueue = new ConcurrentLinkedQueue<>();
@@ -30,16 +25,16 @@ public class WriterThread extends Thread implements IWriterThread {
         messageQueue.add(new QueueTuple(writer, message));
         if (!working) {
             working = true;
-            LOGGER.info("Probouzím vlákno na semaforu.");
+            System.out.println("Probouzím vlákno na semaforu.");
             semaphore.release();
         }
     }
 
     @Override
     public void run() {
-        LOGGER.info("Spouštím zapisovací vlákno.");
+        System.out.println("Spouštím zapisovací vlákno.");
         while(!interrupt) {
-            LOGGER.info("Jdu spát.");
+            System.out.println("Jdu spát.");
             while(messageQueue.isEmpty() && !interrupt) {
                 try {
                     semaphore.acquire();
@@ -47,23 +42,24 @@ public class WriterThread extends Thread implements IWriterThread {
             }
 
             working = true;
-            LOGGER.info("Vzbudil jsem se na semaforu, jdu pracovat.");
+            System.out.println("Vzbudil jsem se na semaforu, jdu pracovat.");
             while(!messageQueue.isEmpty()) {
                 final QueueTuple entry = messageQueue.poll();
                 assert entry != null;
-                LOGGER.info(String.format("Odesílám zprávu: '%s'", entry.message));
+                System.out.println(String.format("Odesílám zprávu: '%s'", entry.message));
                 try {
                     entry.writer.writeObject(entry.message);
                     entry.writer.flush();
-                    LOGGER.info("Zpráva byla úspěšně odeslána.");
+                    System.out.println("Zpráva byla úspěšně odeslána.");
                 } catch (IOException e) {
-                    LOGGER.info("Zprávu se nepodařio doručit.", e);
+                    System.out.println("Zprávu se nepodařio doručit.");
+                    e.printStackTrace();
                 }
             }
             working = false;
         }
 
-        LOGGER.info("Ukončuji writer thread.");
+        System.out.println("Ukončuji writer thread.");
     }
 
     @Override

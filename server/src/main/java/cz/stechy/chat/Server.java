@@ -16,12 +16,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Server {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Server.class);
 
     private final Scanner scanner = new Scanner(System.in);
     private final IParameterFactory parameterFactory;
@@ -42,10 +38,9 @@ public class Server {
         final IParameterProvider parameters = parameterFactory.getParameters(args);
         final IServerThread serverThread = serverThreadFactory.getServerThread(parameters);
 
-        LOGGER.info("Spouštím vlákno serveru.");
+        System.out.println("Spouštím vlákno serveru.");
 
         initPlugins();
-
         serverThread.start();
 
         while(true) {
@@ -55,10 +50,10 @@ public class Server {
             }
         }
 
-        LOGGER.info("Ukončuji server.");
+        System.out.println("Ukončuji server.");
         serverThread.shutdown();
 
-        LOGGER.info("Server byl ukončen.");
+        System.out.println("Server byl ukončen.");
     }
 
     /**
@@ -75,7 +70,7 @@ public class Server {
     }
 
     private void initPlugins() {
-        LOGGER.info("Inicializuji pluginy.");
+        System.out.println("Inicializuji pluginy.");
         final List<IPlugin> pluginList = getSortedPlugins();
 
         for (IPlugin plugin : pluginList) {
@@ -90,14 +85,14 @@ public class Server {
             plugin.setupDependencies(plugins);
         }
 
-        LOGGER.info("Inicializace pluginů dokončena.");
+        System.out.println("Inicializace pluginů dokončena.");
     }
 
 
     public static void main(String[] args) throws Exception {
         final Injector injector = Guice.createInjector(new ServerModule(), new PluginModule("./plugins"));
         Server server = injector.getInstance(Server.class);
-        //server.run(args);
+        server.run(args);
     }
 
 }

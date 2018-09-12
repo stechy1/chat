@@ -9,7 +9,7 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.Objects;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
@@ -83,10 +83,15 @@ public class PluginModule extends AbstractModule {
             return;
         }
 
-        for (File pluginFile : Objects.requireNonNull(pluginsFolder.listFiles(PLUGIN_FILTER))) {
-            loadPlugin(pluginFile).ifPresent(plugin ->
-                pluginBinder.addBinding(plugin.getName()).to(plugin.getClass()).asEagerSingleton());
+        final File[] plugins = pluginsFolder.listFiles(PLUGIN_FILTER);
+        if (plugins == null) {
+            return;
         }
 
+        Arrays.stream(plugins)
+            .map(this::loadPlugin)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(plugin -> pluginBinder.addBinding(plugin.getName()).to(plugin.getClass()).asEagerSingleton());
     }
 }

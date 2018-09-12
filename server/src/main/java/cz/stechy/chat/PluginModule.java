@@ -6,6 +6,7 @@ import cz.stechy.chat.plugins.IPlugin;
 import cz.stechy.chat.plugins.Plugin;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Objects;
@@ -17,6 +18,8 @@ import java.util.jar.Manifest;
 public class PluginModule extends AbstractModule {
 
     // region Constants
+
+    private static final FilenameFilter PLUGIN_FILTER = (file, name) -> name.contains(".jar");
 
     public static final String PLUGIN_IDENTIFIER = "Plugin-Class";
 
@@ -42,17 +45,6 @@ public class PluginModule extends AbstractModule {
     // endregion
 
     // region Private methods
-
-    /**
-     * Filter pouze pro jar soubory
-     *
-     * @param dir Složka, ve které se soubor nachází
-     * @param name Název testovaného souboru
-     * @return True, pokud se jedná o jar soubor, jinak False
-     */
-    private static boolean pluginFilter(File dir, String name) {
-        return name.contains(".jar");
-    }
 
     /**
      * Načte plugin
@@ -91,7 +83,7 @@ public class PluginModule extends AbstractModule {
             return;
         }
 
-        for (File pluginFile : Objects.requireNonNull(pluginsFolder.listFiles(PluginModule::pluginFilter))) {
+        for (File pluginFile : Objects.requireNonNull(pluginsFolder.listFiles(PLUGIN_FILTER))) {
             loadPlugin(pluginFile).ifPresent(plugin ->
                 pluginBinder.addBinding(plugin.getName()).to(plugin.getClass()).asEagerSingleton());
         }

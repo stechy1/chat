@@ -55,6 +55,23 @@ public class PluginModule extends AbstractModule {
     }
 
     /**
+     * Pokusí se načíst všechny pluginy ve složce
+     *
+     * @param pluginBinder {@link MapBinder}
+     */
+    private void loadPlugins(MapBinder<String, IPlugin> pluginBinder) {
+        final File pluginsFolder = new File(pluginsFolderPath);
+        if (!pluginsFolder.exists() || !pluginsFolder.isDirectory()) {
+            return;
+        }
+
+        for (File pluginFile : Objects.requireNonNull(pluginsFolder.listFiles(PluginModule::pluginFilter))) {
+            loadPlugin(pluginFile).ifPresent(plugin ->
+                pluginBinder.addBinding(plugin.getName()).to(plugin.getClass()).asEagerSingleton());
+        }
+    }
+
+    /**
      * Načte plugin
      *
      * @param pluginFile Jar soubor s jedním pluginem
@@ -86,15 +103,6 @@ public class PluginModule extends AbstractModule {
             pluginBinder.addBinding(plugin.name()).to(plugin.clazz).asEagerSingleton();
         }
 
-        final File pluginsFolder = new File(pluginsFolderPath);
-        if (!pluginsFolder.exists() || !pluginsFolder.isDirectory()) {
-            return;
-        }
-
-        for (File pluginFile : Objects.requireNonNull(pluginsFolder.listFiles(PluginModule::pluginFilter))) {
-            loadPlugin(pluginFile).ifPresent(plugin ->
-                pluginBinder.addBinding(plugin.getName()).to(plugin.getClass()).asEagerSingleton());
-        }
-
+        loadPlugins(pluginBinder);
     }
 }

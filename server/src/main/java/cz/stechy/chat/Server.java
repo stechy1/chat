@@ -90,7 +90,7 @@ public class Server {
 
 
     public static void main(String[] args) throws Exception {
-        final Injector injector = Guice.createInjector(new ServerModule(), new PluginModule("./plugins"));
+        final Injector injector = Guice.createInjector(new ServerModule(), new PluginModule(""));
         Server server = injector.getInstance(Server.class);
         server.run(args);
     }

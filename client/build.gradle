@@ -6,7 +6,7 @@ plugins {
 group 'cz.stechy'
 version '1.0-SNAPSHOT'
 
-mainClassName = 'cz.stechy.chat.SimpleClient'
+mainClassName = 'cz.stechy.chat.ChatApp'
 sourceCompatibility = 1.8
 
 repositories {

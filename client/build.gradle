@@ -1,12 +1,32 @@
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
 plugins {
     id 'java'
-    id 'application'
 }
+
+apply plugin: 'javafx-gradle-plugin'
 
 group 'cz.stechy'
 version '1.0-SNAPSHOT'
 
-mainClassName = 'cz.stechy.chat.ChatApp'
+jfx {
+    verbose = true
+    mainClass = 'cz.stechy.chat.ChatApp'
+    vendor = 'Petr Štechmüller'
+    additionalAppResources = 'src/main/resources'
+    jfxMainAppJarName = "chat.jar"
+//    copyAdditionalAppResourcesToJar = true
+}
+
 sourceCompatibility = 1.8
 
 repositories {

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.stechy.chat.controller.chat.ChatController">
+  <VBox fx:id="boxMessageContainer" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+  <TextField fx:id="txtMessage" layoutX="14.0" layoutY="360.0" prefHeight="26.0" prefWidth="509.0" promptText="Napište zprávu..." AnchorPane.bottomAnchor="8.0" AnchorPane.leftAnchor="8.0"/>
+  <Button fx:id="btnSend" onAction="#handleSendMessage" layoutX="524.0" layoutY="366.0" mnemonicParsing="false" text="Odeslat" AnchorPane.bottomAnchor="8.0" AnchorPane.rightAnchor="8.0"/>
+</AnchorPane>

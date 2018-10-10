@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cz.stechy.chat.controller.main.MainController">
+  <ListView fx:id="lvContactList" layoutX="14.0" layoutY="85.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="400.0" AnchorPane.topAnchor="30.0"/>
+  <TabPane fx:id="paneChatContainer" layoutX="200.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="200.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="30.0"/>
+  <MenuBar layoutX="7.0" layoutY="8.0" prefWidth="30.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <Menu mnemonicParsing="false" text="File">
+      <MenuItem text="Připojit..." onAction="#handleConnect"/>
+      <MenuItem text="Close" onAction="#handleClose"/>
+    </Menu>
+  </MenuBar>
+</AnchorPane>

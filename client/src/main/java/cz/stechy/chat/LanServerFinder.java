@@ -91,7 +91,7 @@ public class LanServerFinder implements Runnable {
                 final ServerStatusMessage statusMessage = (ServerStatusMessage) ois.readObject();
                 final ServerStatusData statusData = (ServerStatusData) statusMessage.getData();
                 if (serverFoundListener != null) {
-                    serverFoundListener.onServerFound(statusData);
+                    serverFoundListener.onServerFound(statusData, datagramPacket.getAddress());
                 }
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
@@ -108,8 +108,9 @@ public class LanServerFinder implements Runnable {
         /**
          * Metoda se zavolá vždy, když přijde packet ze serveru
          *
-          * @param data {@link ServerStatusData} Data s informacemi o serveru
+         * @param data {@link ServerStatusData} Data s informacemi o serveru
+         * @param address Adresa serveru, odkud data přišla
          */
-        void onServerFound(ServerStatusData data);
+        void onServerFound(ServerStatusData data, InetAddress address);
     }
 }

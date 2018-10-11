@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 
 public class ConnectController implements Initializable {
 
@@ -19,6 +20,10 @@ public class ConnectController implements Initializable {
     private Button btnDisconnect;
     @FXML
     private Label lblConnectedTo;
+    @FXML
+    private TextField txtServer;
+    @FXML
+    private TextField txtUsername;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

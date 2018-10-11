@@ -17,6 +17,7 @@ public class ChatApp extends Application {
         final FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main/main.fxml"));
         final Parent parent = loader.load();
         final Scene scene = new Scene(parent);
+        stage.setOnCloseRequest(windowEvent -> ThreadPool.shutDown());
         stage.setScene(scene);
         stage.setTitle("Chat - ITnetwork tutorial");
         stage.setWidth(640);

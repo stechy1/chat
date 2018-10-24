@@ -54,7 +54,11 @@ public class MainController implements Initializable {
 
     @FXML
     private void handleConnect(ActionEvent actionEvent) {
-
+        try {
+            showNewWindow("connect/connect", "Připojit k serveru...");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML

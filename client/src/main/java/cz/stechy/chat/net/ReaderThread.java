@@ -31,6 +31,10 @@ public class ReaderThread extends Thread {
      */
     public void shutdown() {
         interrupt = true;
+
+        try {
+            join();
+        } catch (InterruptedException ignored) {}
     }
 
     @Override

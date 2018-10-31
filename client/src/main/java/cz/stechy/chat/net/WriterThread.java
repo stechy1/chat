@@ -35,6 +35,10 @@ public class WriterThread extends Thread {
         interrupt = true;
         messageQueue.clear();
         semaphore.release();
+
+        try {
+            join();
+        } catch (InterruptedException ignored) {}
     }
 
     /**

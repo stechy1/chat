@@ -14,7 +14,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable, OnCloseListener {
 
     private static final String FXML_FORMAT = "/fxml/%s.fxml";
 
@@ -43,13 +43,18 @@ public class MainController implements Initializable {
         }
         stage.setScene(scene);
         stage.setTitle(title);
-        stage.showAndWait();
+        stage.show();
         return controller;
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
+    }
+
+    @Override
+    public void onClose() {
+        // TODO v budoucnu reagovat na zavření okna
     }
 
     @FXML

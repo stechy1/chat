@@ -5,6 +5,7 @@ import cz.stechy.chat.net.OnDataReceivedListener;
 import cz.stechy.chat.net.message.IMessage;
 import java.util.concurrent.CompletableFuture;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.StringProperty;
 
 public interface IClientCommunicationService {
 
@@ -57,4 +58,6 @@ public interface IClientCommunicationService {
     ConnectionState getConnectionState();
 
     String getConnectedServerName();
+
+    StringProperty connectedServerNameProperty();
 }

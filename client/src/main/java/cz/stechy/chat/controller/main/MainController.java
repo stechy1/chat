@@ -1,6 +1,9 @@
 package cz.stechy.chat.controller.main;
 
 import cz.stechy.chat.controller.OnCloseListener;
+import cz.stechy.chat.controller.connect.ConnectController;
+import cz.stechy.chat.service.ClientCommunicationService;
+import cz.stechy.chat.service.IClientCommunicationService;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -22,6 +25,8 @@ public class MainController implements Initializable {
     private ListView lvContactList;
     @FXML
     private TabPane paneChatContainer;
+
+    private final IClientCommunicationService communicator = new ClientCommunicationService();
 
     /**
      * Načte a zobrazí nové okno a vrátí jeho kontroler
@@ -55,7 +60,8 @@ public class MainController implements Initializable {
     @FXML
     private void handleConnect(ActionEvent actionEvent) {
         try {
-            showNewWindow("connect/connect", "Připojit k serveru...");
+            final ConnectController controller = showNewWindow("connect/connect", "Připojit k serveru...");
+            controller.setCommunicator(communicator);
         } catch (IOException e) {
             e.printStackTrace();
         }

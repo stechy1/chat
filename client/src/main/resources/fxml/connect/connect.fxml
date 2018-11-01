@@ -39,7 +39,7 @@
        <Label text="Přezdívka:" GridPane.rowIndex="1"/>
        <TextField fx:id="txtServer" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER"/>
        <TextField fx:id="txtUsername" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER"/>
-       <Button mnemonicParsing="false" text="Připojit" textFill="#189718" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+       <Button fx:id="btnConnect" onAction="#handleConnect" mnemonicParsing="false" text="Připojit" textFill="#189718" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <GridPane.margin>
            <Insets bottom="8.0" right="8.0"/>
          </GridPane.margin>

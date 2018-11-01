@@ -63,6 +63,7 @@ public class ClientCommunicationService implements IClientCommunicationService {
             readerThread.start();
             writerThread.start();
             registerMessageObserver(ServerStatusMessage.MESSAGE_TYPE, this.serverStatusListener);
+            changeState(ConnectionState.CONNECTED);
         } catch (IOException e) {
             System.out.println("Vyskytl se problém při vytváření komunikace se serverem.");
         }
@@ -88,6 +89,7 @@ public class ClientCommunicationService implements IClientCommunicationService {
     };
 
     private void changeState(ConnectionState state) {
+        System.out.println("Changing state to: " + state);
         connectionState.set(state);
     }
 
@@ -222,5 +224,10 @@ public class ClientCommunicationService implements IClientCommunicationService {
     @Override
     public String getConnectedServerName() {
         return connectedServerName.get();
+    }
+
+    @Override
+    public StringProperty connectedServerNameProperty() {
+        return connectedServerName;
     }
 }

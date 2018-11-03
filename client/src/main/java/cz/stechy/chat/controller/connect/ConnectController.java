@@ -56,18 +56,19 @@ public class ConnectController implements Initializable, OnCloseListener {
         }
 
         this.communicator.connect(host, port)
-            .thenAccept(success -> {
-                if (!success) {
-                    Alert alert = new Alert(AlertType.ERROR);
-                    alert.setHeaderText("Chyba");
-                    alert.setContentText("Připojení k serveru se nezdařilo.");
-                    alert.showAndWait();
-                } else {
-                    Alert alert = new Alert(AlertType.INFORMATION);
-                    alert.setHeaderText("Informace");
-                    alert.setContentText("Spojení bylo úspěšně navázáno.");
-                    alert.showAndWait();
-                }
+            .exceptionally(throwable -> {
+                Alert alert = new Alert(AlertType.ERROR);
+                alert.setHeaderText("Chyba");
+                alert.setContentText("Připojení k serveru se nezdařilo.");
+                alert.showAndWait();
+
+                throw new RuntimeException(throwable);
+            })
+            .thenAccept(ignored -> {
+                Alert alert = new Alert(AlertType.INFORMATION);
+                alert.setHeaderText("Informace");
+                alert.setContentText("Spojení bylo úspěšně navázáno.");
+                alert.showAndWait();
             });
     }
 

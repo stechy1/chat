@@ -1,8 +1,12 @@
 package cz.stechy.chat.controller.connect;
 
+import cz.stechy.chat.ThreadPool;
 import cz.stechy.chat.controller.OnCloseListener;
 import cz.stechy.chat.model.ServerEntry;
 import cz.stechy.chat.net.ConnectionState;
+import cz.stechy.chat.net.message.AuthMessage;
+import cz.stechy.chat.net.message.AuthMessage.AuthAction;
+import cz.stechy.chat.net.message.AuthMessage.AuthMessageData;
 import cz.stechy.chat.service.IClientCommunicationService;
 import cz.stechy.chat.service.LocalServerService;
 import cz.stechy.chat.widget.ServerEntryCell;
@@ -44,6 +48,7 @@ public class ConnectController implements Initializable, OnCloseListener {
         final String hostPort = txtServer.textProperty().get();
         final String host = hostPort.substring(0, hostPort.indexOf(":"));
         final String portRaw = hostPort.substring(hostPort.indexOf(":") + 1);
+        final String username = txtUsername.getText();
         int port;
         try {
             port = Integer.parseInt(portRaw);
@@ -64,12 +69,23 @@ public class ConnectController implements Initializable, OnCloseListener {
 
                 throw new RuntimeException(throwable);
             })
-            .thenAccept(ignored -> {
-                Alert alert = new Alert(AlertType.INFORMATION);
-                alert.setHeaderText("Informace");
-                alert.setContentText("Spojení bylo úspěšně navázáno.");
-                alert.showAndWait();
-            });
+            .thenCompose(ignored ->
+                this.communicator.sendMessageFuture(
+                    new AuthMessage(AuthAction.LOGIN, new AuthMessageData(username)))
+                    .thenAcceptAsync(responce -> {
+                        if (!responce.isSuccess()) {
+                            Alert alert = new Alert(AlertType.ERROR);
+                            alert.setHeaderText("Chyba");
+                            alert.setContentText("Připojení k serveru se nezdařilo.");
+                            alert.showAndWait();
+                            this.communicator.disconnect();
+                        } else {
+                            Alert alert = new Alert(AlertType.INFORMATION);
+                            alert.setHeaderText("Úspěch");
+                            alert.setContentText("Přihlášení se zdařilo.");
+                            alert.showAndWait();
+                        }
+                    }, ThreadPool.JAVAFX_EXECUTOR));
     }
 
     @Override

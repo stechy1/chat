@@ -11,11 +11,10 @@ public interface IClientCommunicationService {
 
     /**
      * Pokusí se připojit na server
-     *
-     * @param host Adresa serveru
+     *  @param host Adresa serveru
      * @param port Port, na kterém server naslouchá
      */
-    CompletableFuture<Boolean> connect(String host, int port);
+    CompletableFuture<Void> connect(String host, int port);
 
     /**
      * Ukončí spojení se serverem

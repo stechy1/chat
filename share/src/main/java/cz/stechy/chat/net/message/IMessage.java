@@ -34,6 +34,15 @@ public interface IMessage extends Serializable {
     }
 
     /**
+     * Příznak indikující, zda-li se jedná o odpověd na dotaz, či nikoliv
+     *
+     * @return True, pokud se jedná odpověď na dotaz, jinak False
+     */
+    default boolean isResponce() {
+        return false;
+    }
+
+    /**
      * Převede objekt na balík dat
      *
      * @return Pole bytů
@@ -48,5 +57,9 @@ public interface IMessage extends Serializable {
         assert bytes.length < 1024;
 
         return bytes;
+    }
+
+    default IMessage getResponce(boolean success, Object... responceData) {
+        return new ResponceMessage(success, responceData);
     }
 }

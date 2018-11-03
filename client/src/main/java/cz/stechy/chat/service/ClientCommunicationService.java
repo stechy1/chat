@@ -102,9 +102,9 @@ public class ClientCommunicationService implements IClientCommunicationService {
     }
 
     @Override
-    public CompletableFuture<Boolean> connect(String host, int port) {
+    public CompletableFuture<Void> connect(String host, int port) {
         if (isConnected()) {
-            return CompletableFuture.completedFuture(false);
+            throw new RuntimeException("Spojení je již vytvořeno.");
         }
 
         changeState(ConnectionState.CONNECTING);
@@ -128,7 +128,11 @@ public class ClientCommunicationService implements IClientCommunicationService {
                     this.host.set(null);
                     this.port.set(-1);
                 }
-                return socket != null;
+                if (socket == null) {
+                    throw new RuntimeException("Spojení se nepodařilo vytvořit.");
+                }
+
+                return null;
             }, ThreadPool.JAVAFX_EXECUTOR);
     }
 

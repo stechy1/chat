@@ -2,6 +2,8 @@ package cz.stechy.chat.plugins.auth;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import cz.stechy.chat.core.connection.Client;
+import cz.stechy.chat.core.connection.ClientDisconnectedEvent;
 import cz.stechy.chat.core.connection.IClient;
 import cz.stechy.chat.core.connection.MessageReceivedEvent;
 import cz.stechy.chat.core.event.IEvent;
@@ -32,8 +34,8 @@ public class AuthPlugin implements IPlugin {
 
         switch (authMessage.getAction()) {
             case LOGIN:
-                Optional<User> optionalUser = authService.login(data.name);
                 final IClient client = messageReceivedEvent.getClient();
+                final Optional<User> optionalUser = authService.login(data.name, client);
                 final boolean success = optionalUser.isPresent();
 
                 client.sendMessageAsync(authMessage.getResponce(success, success ? optionalUser.get().id : null));
@@ -44,6 +46,12 @@ public class AuthPlugin implements IPlugin {
             default:
                 throw new RuntimeException("Neplatný parametr");
         }
+    }
+
+    private void clientDisconnectedHandler(IEvent event) {
+        final ClientDisconnectedEvent disconnectedEvent = (ClientDisconnectedEvent) event;
+        final Client disconnectedClient = disconnectedEvent.getClient();
+        authService.logout(disconnectedClient);
     }
 
     @Override
@@ -59,5 +67,6 @@ public class AuthPlugin implements IPlugin {
     @Override
     public void registerMessageHandlers(IEventBus eventBus) {
         eventBus.registerEventHandler(AuthMessage.MESSAGE_TYPE, this::authMessageHandler);
+        eventBus.registerEventHandler(ClientDisconnectedEvent.EVENT_TYPE, this::clientDisconnectedHandler);
     }
 }

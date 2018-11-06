@@ -10,7 +10,7 @@ public interface IAuthService {
 
     Optional<User> login(String username, IClient client);
 
-    void logout(String id);
+    Optional<User> logout(String id);
 
-    void logout(IClient client);
+    Optional<User> logout(IClient client);
 }

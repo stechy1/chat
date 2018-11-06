@@ -30,7 +30,7 @@ class AuthService implements IAuthService {
     }
 
     @Override
-    public void logout(String id) {
+    public Optional<User> logout(String id) {
         IClient client = null;
         for (Entry<IClient, User> userEntry : users.entrySet()) {
             if (Objects.equals(id, userEntry.getValue().id)) {
@@ -40,12 +40,17 @@ class AuthService implements IAuthService {
         }
 
         if (client != null) {
-            logout(client);
+            return logout(client);
         }
+
+        return Optional.empty();
     }
 
     @Override
-    public void logout(IClient client) {
+    public Optional<User> logout(IClient client) {
+        final User user = users.get(client);
         users.remove(client);
+
+        return Optional.of(user);
     }
 }

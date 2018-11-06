@@ -11,6 +11,8 @@ import cz.stechy.chat.core.event.IEventBus;
 import cz.stechy.chat.net.message.AuthMessage;
 import cz.stechy.chat.net.message.AuthMessage.AuthMessageData;
 import cz.stechy.chat.plugins.IPlugin;
+import cz.stechy.chat.plugins.auth.event.LoginEvent;
+import cz.stechy.chat.plugins.auth.event.LogoutEvent;
 import cz.stechy.chat.plugins.auth.service.IAuthService;
 import java.util.Optional;
 
@@ -20,10 +22,12 @@ public class AuthPlugin implements IPlugin {
     private static final String PLUGIN_NAME = "auth";
 
     private final IAuthService authService;
+    private final IEventBus eventBus;
 
     @Inject
-    public AuthPlugin(IAuthService authService) {
+    public AuthPlugin(IAuthService authService, IEventBus eventBus) {
         this.authService = authService;
+        this.eventBus = eventBus;
     }
 
     private void authMessageHandler(IEvent event) {
@@ -39,9 +43,12 @@ public class AuthPlugin implements IPlugin {
                 final boolean success = optionalUser.isPresent();
 
                 client.sendMessageAsync(authMessage.getResponce(success, success ? optionalUser.get().id : null));
+                if (success) {
+                    eventBus.publishEvent(new LoginEvent(client, optionalUser.get()));
+                }
                 break;
             case LOGOUT:
-                authService.logout(data.id);
+                authService.logout(data.id).ifPresent(user -> eventBus.publishEvent(new LogoutEvent(user)));
                 break;
             default:
                 throw new RuntimeException("Neplatný parametr");
@@ -51,7 +58,7 @@ public class AuthPlugin implements IPlugin {
     private void clientDisconnectedHandler(IEvent event) {
         final ClientDisconnectedEvent disconnectedEvent = (ClientDisconnectedEvent) event;
         final Client disconnectedClient = disconnectedEvent.getClient();
-        authService.logout(disconnectedClient);
+        authService.logout(disconnectedClient).ifPresent(user -> eventBus.publishEvent(new LogoutEvent(user)));
     }
 
     @Override

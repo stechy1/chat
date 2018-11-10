@@ -56,7 +56,7 @@ public class ChatTabContent {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) { }
         }, ThreadPool.COMMON_EXECUTOR)
-            .thenAcceptAsync(aVoid -> {
+            .thenAcceptAsync(ignored -> {
                 // Nyní můžu najít jiř přiřazený text
                 final Node text = areaMessage.lookup(".text");
                 if (text == null) {

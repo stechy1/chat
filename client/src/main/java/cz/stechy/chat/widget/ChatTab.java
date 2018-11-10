@@ -26,12 +26,12 @@ import javafx.scene.shape.Circle;
 /**
  * Třída reprezentující jedenu konverzaci
  */
-class ChatTab extends Tab {
+public class ChatTab extends Tab {
 
     private static final URL PATH_CONTENT_INCOMING = ChatTab.class.getResource("/fxml/chat/chat_tab_content_incoming.fxml");
     private static final URL PATH_CONTENT_OUTCOMING = ChatTab.class.getResource("/fxml/chat/chat_tab_content_outcoming.fxml");
-    private static final String PATH_IMG_TYPING = ChatTab.class.getResource("/fxml/chat/").toExternalForm();
-    private static final String PATH_IMG_LOADING = ChatTab.class.getResource("/fxml/chat/").toExternalForm();
+    private static final String PATH_IMG_TYPING = ChatTab.class.getResource("/img/typing.gif").toExternalForm();
+    private static final String PATH_IMG_LOADING = ChatTab.class.getResource("/img/loading.gif").toExternalForm();
 
     private final ScrollPane container = new ScrollPane();
     private final VBox messagesContiainer = new VBox();
@@ -144,7 +144,7 @@ class ChatTab extends Tab {
                     container.setContent(messagesContiainer);
                     // Nakonec proiteruji všechny zprávy a zažádám o automatické nastavení velikosti
                     messagesContiainer.getChildren()
-                        .parallelStream()
+                        .stream()
                         .map(node -> (ChatTabContent) node.getUserData())
                         .filter(Objects::nonNull)
                         .forEach(ChatTabContent::askForResizeTextArea);

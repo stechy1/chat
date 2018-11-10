@@ -2,11 +2,16 @@ package cz.stechy.chat.controller.main;
 
 import cz.stechy.chat.controller.OnCloseListener;
 import cz.stechy.chat.controller.connect.ConnectController;
+import cz.stechy.chat.model.ChatContact;
+import cz.stechy.chat.service.ChatService;
 import cz.stechy.chat.service.ClientCommunicationService;
+import cz.stechy.chat.service.IChatService;
 import cz.stechy.chat.service.IClientCommunicationService;
+import cz.stechy.chat.widget.ChatEntryCell;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.MapChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,11 +27,12 @@ public class MainController implements Initializable, OnCloseListener {
     private static final String FXML_FORMAT = "/fxml/%s.fxml";
 
     @FXML
-    private ListView lvContactList;
+    private ListView<ChatContact> lvContactList;
     @FXML
     private TabPane paneChatContainer;
 
     private final IClientCommunicationService communicator = new ClientCommunicationService();
+    private final IChatService chatService = new ChatService(communicator);
 
     /**
      * Načte a zobrazí nové okno a vrátí jeho kontroler
@@ -52,14 +58,26 @@ public class MainController implements Initializable, OnCloseListener {
         return controller;
     }
 
+    private final MapChangeListener<? super String, ? super ChatContact> chatClientListener = change -> {
+        if (change.wasAdded()) {
+            lvContactList.getItems().addAll(change.getValueAdded());
+        }
+
+        if (change.wasRemoved()) {
+            lvContactList.getItems().removeAll(change.getValueRemoved());
+        }
+    };
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        lvContactList.setCellFactory(param -> new ChatEntryCell());
 
+        chatService.getClients().addListener(this.chatClientListener);
     }
 
     @Override
     public void onClose() {
-        communicator.disconnect().join();
+        communicator.disconnect();
     }
 
     @FXML

@@ -10,8 +10,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class MainController implements Initializable, OnCloseListener {
@@ -22,6 +24,10 @@ public class MainController implements Initializable, OnCloseListener {
     private ListView lvContactList;
     @FXML
     private TabPane paneChatContainer;
+    @FXML
+    private Button btnSend;
+    @FXML
+    private TextField txtMessage;
 
     /**
      * Načte a zobrazí nové okno a vrátí jeho kontroler
@@ -68,6 +74,11 @@ public class MainController implements Initializable, OnCloseListener {
 
     @FXML
     private void handleClose(ActionEvent actionEvent) {
+
+    }
+
+    @FXML
+    private void handleSendMessage(ActionEvent actionEvent) {
 
     }
 }

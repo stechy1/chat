@@ -25,6 +25,7 @@ public class ChatEntryCell extends ListCell<ChatContact> {
     }
 
     private void bind(ChatContact item) {
+        System.out.println("Binding contact: " + item);
         circle.fillProperty().bind(item.contactColorProperty());
         lblName.textProperty().bind(item.nameProperty());
         lblUnreadedMessages.textProperty().bind(item.unreadedMessagesProperty().asString());

@@ -28,8 +28,8 @@ import javafx.scene.shape.Circle;
  */
 public class ChatTab extends Tab {
 
-    private static final URL PATH_CONTENT_INCOMING = ChatTab.class.getResource("/fxml/chat/chat_tab_content_incoming.fxml");
-    private static final URL PATH_CONTENT_OUTCOMING = ChatTab.class.getResource("/fxml/chat/chat_tab_content_outcoming.fxml");
+    private static final URL PATH_CONTENT_INCOMING = ChatTab.class.getResource("/fxml/chat/message_incomming.fxml");
+    private static final URL PATH_CONTENT_OUTCOMING = ChatTab.class.getResource("/fxml/chat/message_outcomming.fxml");
     private static final String PATH_IMG_TYPING = ChatTab.class.getResource("/img/typing.gif").toExternalForm();
     private static final String PATH_IMG_LOADING = ChatTab.class.getResource("/img/loading.gif").toExternalForm();
 
@@ -40,7 +40,7 @@ public class ChatTab extends Tab {
     private final Circle circle = new Circle();
     private final ChatContact chatContact;
 
-    ChatTab(ChatContact chatContact) {
+    public ChatTab(ChatContact chatContact) {
         super();
         this.chatContact = chatContact;
         this.chatContact.getMessages().addListener(this.messagesListener);

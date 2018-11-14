@@ -99,7 +99,7 @@ public class ChatTab extends Tab {
      * @return URL adresu FXML souboru pro načtení správného view
      */
     private URL getPath(ChatContact from) {
-        return from == this.chatContact ? PATH_CONTENT_INCOMING : PATH_CONTENT_OUTCOMING;
+        return from == this.chatContact ? PATH_CONTENT_OUTCOMING : PATH_CONTENT_INCOMING;
     }
 
     /**

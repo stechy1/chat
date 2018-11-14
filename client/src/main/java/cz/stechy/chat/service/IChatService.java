@@ -6,6 +6,8 @@ import javafx.collections.ObservableMap;
 
 public interface IChatService {
 
+    void saveUserId(String id);
+
     /**
      * Odešle zprávu
      *

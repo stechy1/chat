@@ -94,7 +94,7 @@ public class ChatContact {
     }
 
     public ObservableList<ChatMessageEntry> getMessages() {
-        return FXCollections.unmodifiableObservableList(messages);
+        return messages;
     }
 
     @Override

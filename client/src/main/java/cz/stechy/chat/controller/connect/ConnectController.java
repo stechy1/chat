@@ -7,6 +7,7 @@ import cz.stechy.chat.net.ConnectionState;
 import cz.stechy.chat.net.message.AuthMessage;
 import cz.stechy.chat.net.message.AuthMessage.AuthAction;
 import cz.stechy.chat.net.message.AuthMessage.AuthMessageData;
+import cz.stechy.chat.service.IChatService;
 import cz.stechy.chat.service.IClientCommunicationService;
 import cz.stechy.chat.service.LocalServerService;
 import cz.stechy.chat.widget.ServerEntryCell;
@@ -43,6 +44,7 @@ public class ConnectController implements Initializable, OnCloseListener {
 
     private final LocalServerService serverService = new LocalServerService();
     private IClientCommunicationService communicator;
+    private IChatService chatService;
 
     private void connect() {
         final String hostPort = txtServer.textProperty().get();
@@ -84,6 +86,7 @@ public class ConnectController implements Initializable, OnCloseListener {
                             alert.setHeaderText("Úspěch");
                             alert.setContentText("Přihlášení se zdařilo.");
                             alert.showAndWait();
+                            chatService.saveUserId((String) ((Object[])responce.getData())[0]);
                         }
                     }, ThreadPool.JAVAFX_EXECUTOR));
     }
@@ -133,5 +136,9 @@ public class ConnectController implements Initializable, OnCloseListener {
         btnConnect.disableProperty().bind(connected.or(txtServer.textProperty().isEmpty()));
         btnDisconnect.disableProperty().bind(connected.not());
         lblConnectedTo.textProperty().bind(this.communicator.connectedServerNameProperty());
+    }
+
+    public void setChatService(IChatService chatService) {
+        this.chatService = chatService;
     }
 }

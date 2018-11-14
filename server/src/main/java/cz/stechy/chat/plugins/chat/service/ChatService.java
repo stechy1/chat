@@ -17,7 +17,7 @@ import java.util.Optional;
 @Singleton
 class ChatService implements IChatService {
 
-    private final Map<String, IClient> clients = new HashMap<>();
+    private final Map<String, ChatClient> clients = new HashMap<>();
 
     /**
      * Odešle zprávu všem klientům, kteří jsou přihlášení k chatu
@@ -25,32 +25,28 @@ class ChatService implements IChatService {
      * @param message {@link IMessage} Zpráva, která se má odeslat všem
      */
     private void broadcastMessage(IMessage message) {
-        clients.values().forEach(chatClient -> chatClient.sendMessageAsync(message));
+        clients.values().forEach(chatClient -> chatClient.client.sendMessageAsync(message));
     }
-
-    // endregion
-
-    // endregion
 
     @Override
     public synchronized void addClient(IClient client, String id, String name) {
         System.out.println("Přidávám nového klienta {} na seznam v chatu.");
-        //final ChatClient chatClient = new ChatClient(client, name);
-            // Odešlu klientovi aktuální seznam všech klientů
-            clients.forEach((clientId, entry) ->
-                client.sendMessageAsync(new ChatMessage(
-                    new ChatMessageAdministrationData(
-                        new ChatMessageAdministrationClientState(
-                            ChatAction.CLIENT_CONNECTED, clientId, name)))));
-            // Přidám záznam o klientovi na seznam
-            clients.put(id, client);
-            // Rozešlu broadcast všem připojeným klientům
-            // Ano, odešlu ho i klientovi, který se právě připojil
-            // Tím získám jistou výhodu a můžu snadno přidat sám sebe na seznam kontaktů
-            broadcastMessage(new ChatMessage(
+        final ChatClient chatClient = new ChatClient(client, name);
+        // Odešlu klientovi aktuální seznam všech klientů
+        clients.forEach((clientId, entry) ->
+            client.sendMessageAsync(new ChatMessage(
                 new ChatMessageAdministrationData(
                     new ChatMessageAdministrationClientState(
-                        ChatAction.CLIENT_CONNECTED, id, name))));
+                        ChatAction.CLIENT_CONNECTED, clientId, entry.name)))));
+        // Přidám záznam o klientovi na seznam
+        clients.put(id, chatClient);
+        // Rozešlu broadcast všem připojeným klientům
+        // Ano, odešlu ho i klientovi, který se právě připojil
+        // Tím získám jistou výhodu a můžu snadno přidat sám sebe na seznam kontaktů
+        broadcastMessage(new ChatMessage(
+            new ChatMessageAdministrationData(
+                new ChatMessageAdministrationClientState(
+                    ChatAction.CLIENT_CONNECTED, id, name))));
     }
 
     @Override
@@ -67,14 +63,14 @@ class ChatService implements IChatService {
 
     @Override
     public void sendMessage(String destinationClientId, String sourceClientId, byte[] rawMessage) {
-        clients.get(destinationClientId).sendMessageAsync(new ChatMessage(new ChatMessageCommunicationData(sourceClientId, rawMessage)));
+        clients.get(destinationClientId).client.sendMessageAsync(new ChatMessage(new ChatMessageCommunicationData(sourceClientId, rawMessage)));
     }
 
     @Override
     public Optional<String> findIdByClient(IClient client) {
-        final Optional<Entry<String, IClient>> entryOptional = clients.entrySet()
+        final Optional<Entry<String, ChatClient>> entryOptional = clients.entrySet()
             .stream()
-            .filter(entry -> entry.getValue() == client)
+            .filter(entry -> entry.getValue().client == client)
             .findFirst();
 
         return entryOptional.map(Entry::getKey);
@@ -82,7 +78,7 @@ class ChatService implements IChatService {
 
     @Override
     public void informClientIsTyping(String destinationClientId, String sourceClientId, boolean typing) {
-        clients.get(destinationClientId).sendMessageAsync(
+        clients.get(destinationClientId).client.sendMessageAsync(
             new ChatMessage(
                 new ChatMessageAdministrationData(
                     new ChatMessageAdministrationClientTyping(
@@ -90,4 +86,13 @@ class ChatService implements IChatService {
                     ))));
     }
 
+    private static final class ChatClient {
+        final IClient client;
+        final String name;
+
+        private ChatClient(IClient client, String name) {
+            this.client = client;
+            this.name = name;
+        }
+    }
 }

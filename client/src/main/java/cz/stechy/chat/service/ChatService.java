@@ -29,6 +29,7 @@ public final class ChatService implements IChatService {
     private final List<String> typingInformations = new ArrayList<>();
     // Komunikátor se serverem
     private final IClientCommunicationService communicator;
+    private String thisUserId;
 
     /**
      * Vytvoří novou chatovací službu
@@ -63,6 +64,11 @@ public final class ChatService implements IChatService {
     }
 
     @Override
+    public void saveUserId(String id) {
+        this.thisUserId = id;
+    }
+
+    @Override
     public void sendMessage(String id, String message) {
         final ChatContact chatContact = clients.get(id);
         if (chatContact == null) {
@@ -74,6 +80,7 @@ public final class ChatService implements IChatService {
         byte[] messageData = (message + " ").getBytes();
         communicator.sendMessage(new ChatMessage(new ChatMessageCommunicationData(id, messageData)));
 
+        chatContact.addMessage(clients.get(thisUserId), message);
     }
 
     @Override

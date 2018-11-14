@@ -65,7 +65,7 @@ public class MainController implements Initializable, OnCloseListener {
 
     @Override
     public void onClose() {
-        communicator.disconnect().join();
+        communicator.disconnect();
     }
 
     @FXML

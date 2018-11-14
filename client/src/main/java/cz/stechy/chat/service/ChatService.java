@@ -107,7 +107,7 @@ public final class ChatService implements IChatService {
 
     @Override
     public ObservableMap<String, ChatContact> getClients() {
-        return FXCollections.unmodifiableObservableMap(clients);
+        return clients;
     }
 
     private final OnDataReceivedListener chatMessageListener = message -> {

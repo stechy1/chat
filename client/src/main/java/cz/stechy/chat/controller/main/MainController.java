@@ -170,6 +170,7 @@ public class MainController implements Initializable, OnCloseListener {
         try {
             final ConnectController controller = showNewWindow("connect/connect", "Připojit k serveru...");
             controller.setCommunicator(communicator);
+            controller.setChatService(chatService);
         } catch (IOException e) {
             e.printStackTrace();
         }

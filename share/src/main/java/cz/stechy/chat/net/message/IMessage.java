@@ -58,4 +58,8 @@ public interface IMessage extends Serializable {
 
         return bytes;
     }
+
+    default IMessage getResponce(boolean success, Object... responceData) {
+        return new ResponceMessage(success, responceData);
+    }
 }
